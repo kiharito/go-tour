@@ -31,11 +31,20 @@ func loadPage(title string) (*Page, error) {
 }
 
 func main() {
+	http.HandleFunc("/", rootHandler)
 	http.HandleFunc("/view/", makeHandler(viewHandler))
 	http.HandleFunc("/edit/", makeHandler(editHandler))
 	http.HandleFunc("/save/", makeHandler(saveHandler))
 
 	log.Fatal(http.ListenAndServe(":8080", nil))
+}
+
+func rootHandler(w http.ResponseWriter, r *http.Request) {
+	if len(r.URL.Path) > 1 {
+		http.NotFound(w, r)
+		return
+	}
+	http.Redirect(w, r, "/view/FrontPage", http.StatusFound)
 }
 
 func viewHandler(w http.ResponseWriter, r *http.Request, title string) {
@@ -47,7 +56,7 @@ func viewHandler(w http.ResponseWriter, r *http.Request, title string) {
 	renderTemplate(w, "view", p)
 }
 
-func editHandler(w http.ResponseWriter, r *http.Request, title string) {
+func editHandler(w http.ResponseWriter, _ *http.Request, title string) {
 	p, err := loadPage(title)
 	if err != nil {
 		p = &Page{Title: title}
