@@ -1,4 +1,4 @@
 .idea/
 
 wiki
-data/
+data/*.txt
